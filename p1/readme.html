@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="" />
+  <title>212 Project 1 – Deque with Circular Buffer</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style>
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <style type="text/css">
+  body 
+  {
+  	font-family:Gill Sans MT;
+  	color:#657b83;
+  	background-color:#fdf6e3;
+  	max-width:500pt;
+  	padding-left:25pt;
+  	padding-right:25pt;
+  	padding-bottom:20pt;
+  	margin:0 auto 0 auto;
+  	text-align:justify;
+  }
+  a:link {color:#6c71c4;}
+  a:visited {color:#859900;}
+  a:hover {color:#268bd2;}
+  a:active {color:#d33682;}
+  h1{}
+  h2{border-style:solid;
+   text-align:center;
+  }
+  h3
+  {
+  	margin-bottom:2pt;
+  	/*color:#268bd2;*/
+  	font-weight:bold;
+  }
+  strong
+  {
+  	color:#d33682;
+  	font-weight:bolder;
+  }
+  em
+  {
+  	color:#268bd2;
+  	font-style:italic;
+  	font-weight:bolder;
+  }
+  code
+  {
+      background-color:#eee8d5;
+      color:#586e75;
+  }
+  table.sourceCode
+  {
+      background-color:#eee8d5;
+      color:#586e75;
+  }
+  pre.sourceCode
+  {
+      background-color:#eee8d5;
+      color:#586e75;
+  }
+  .math
+  {
+      /*background-color:#eee8d5;*/
+      color:#586e75;
+      font-family:Times New Roman;
+  }
+  /*use a contextual style to undo the blue-ness:*/
+  .math em
+  {
+      color:#586e75;
+  	font-weight:normal;
+  }
+  .descrip
+  {
+  	max-width:500pt;
+  	padding-left:25pt;
+  	text-align:justify;
+  }
+  .descripbig
+  {
+  	max-width:575pt;
+  	padding-left:0pt;
+  	text-align:justify;
+  }
+  .emph
+  {
+  	color:#d33682;
+  	font-weight:bolder;
+  }
+  .litem
+  {
+  	color:#268bd2;
+  	font-style:italic;
+  	font-weight:bolder;
+  }
+  .hl
+  {
+  	color:#268bd2;
+  	font-style:italic;
+  }
+  .required
+  {
+  	color:#268bd2;
+  	font-style:italic;
+  	font-weight:bold;
+  }
+  .inputbox
+  {
+  	background-color:#eee8d5;
+  	color:#586e75;
+  	font-family:Gill Sans MT;
+  	font-weight:bolder;
+  }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">212 Project 1 – Deque with Circular Buffer</h1>
+<p class="author"></p>
+</header>
+<h2 id="due-thursday-february-27th-1159pm"><em>Due:</em> Thursday, February 27th @ 11:59pm</h2>
+<h2 id="synopsis">Synopsis</h2>
+<p>In this assignment, you will implement a deque using a circular buffer.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<h2 id="important-notes-on-grading">Important Notes on Grading</h2>
+<p>I would like you all to collaborate on these projects in small teams. Teams <strong>must have 3 – 4 people</strong>. Details:</p>
+<ul>
+<li>Everyone should sign up on <a href="https://bitbucket.org/">bitbucket</a>.</li>
+<li>Designate one member of your team to be the leader / repository owner. (They’ll set up the repository and grant access to the rest of the team.)</li>
+<li>Commits from the team members can be incorporated in one of two ways:
+<ol type="1">
+<li>Follow the instructions on <a href="https://www-cs.ccny.cuny.edu/~wes/CSC103/scm.html#collaborate">collaborating with git</a>. (Team leaders: don’t forget to give other members write access to the repository.)</li>
+<li>Use bitbucket’s fork + pull request features.</li>
+</ol></li>
+<li>Team leaders – please <em>edit</em> (or start, if it doesn’t exist) a piazza post containing the url of your repository, and a list of the team’s members.</li>
+<li>I’ll grade the projects based on whether or not they pass the automated tests, and whether or not each team member is contributing (as evidenced by the commit logs). <strong>NOTE:</strong> please don’t just delegate work – each person should understand each function in its entirety.</li>
+</ul>
+<h2 id="details">Details</h2>
+<p>Your job is to finish the partial implementation by writing definitions for the following functions in <code>deque.cpp</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a>deque(<span class="at">const</span> deque&amp; D);</span>
+<span id="cb1-2"><a href="#cb1-2"></a>deque&amp; <span class="kw">operator</span>=(deque RHS);</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="dt">int</span> back() <span class="at">const</span>;</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="dt">int</span> front() <span class="at">const</span>;</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="dt">size_t</span> size() <span class="at">const</span>;</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="dt">void</span> push_front(<span class="dt">int</span> x);</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="dt">void</span> push_back(<span class="dt">int</span> x);</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="dt">int</span> pop_front();</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="dt">int</span> pop_back();</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="dt">void</span> clear();</span></code></pre></div>
+<p>Remember: you are supposed to implement the queue via a <strong>circular array</strong>. Here are some pictures that might help you. Suppose our deque is initially empty, and has a buffer of 6 elements allocated for it:</p>
+<pre><code>-------------
+| | | | | | |
+-------------
+ ^
+ front==next back</code></pre>
+<p>Now suppose we push 0,1,2,3 to the back:</p>
+<pre><code>-------------
+|0|1|2|3| | |
+-------------
+ ^       ^next back
+ front</code></pre>
+<p>Then a call to pop_front leaves us with:</p>
+<pre><code>-------------
+| |1|2|3| | |
+-------------
+   ^     ^next back
+   front</code></pre>
+<p>(Note that the 0 would still be in the array, but I’ve drawn it blank to illustrate it is no longer considered part of the deque’s contents). Now say we do this:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="cf">for</span> (i=<span class="dv">4</span>; i&lt;<span class="dv">7</span>; i++) {</span>
+<span id="cb5-2"><a href="#cb5-2"></a>    D.push_back(i);</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    D.pop_front();</span>
+<span id="cb5-4"><a href="#cb5-4"></a>}</span></code></pre></div>
+<p>Then we’ll have the following array:</p>
+<pre><code>-------------
+|6| | | |4|5|
+-------------
+         ^front
+   ^next back</code></pre>
+<h3 id="modular-arithmetic-in-cc">Modular arithmetic in C/C++</h3>
+<p>Modular arithmetic is very natural when working with circular buffers, but in C or C++, you have to be a little careful: reducing a negative integer modulo some other value <span class="math inline"><em>n</em></span> can produce unexpected results. In particular, you might not get a value in the range <code>0..n-1</code> as you would hope. Here’s one fairly general way around the issue:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1"></a><span class="dt">int</span> reduced = (maybenegative + n) % n;</span></code></pre></div>
+<p>Then (as long as <code>maybenegative</code> isn’t less than <code>-n</code>, as should be the case for the operations you will likely encounter, e.g., decrementing) you’ll be sure to get something in the range <code>0..n-1</code> as desired.</p>
+<h3 id="compiling-stuff">Compiling stuff</h3>
+<p>A makefile has been provided. Running <code>make</code> should produce two programs, <code>main</code>, and <code>check</code>, which are built from <code>main.cpp</code> and <code>check.cpp</code> respectively. The former is for simple debugging – you can manually modify and print the contents of the structure. The <code>check</code> program runs some automated, randomized tests. <em>NOTE:</em> you will probably want to use debugging flags most of the time. In this case, run <code>make debug</code>, or <code>make -B debug</code> to recompile everything and make sure debugging flags are enabled. Doing this will enable assertions and make it friendly for <code>gdb</code>.</p>
+<h3 id="testing-and-debugging">Testing and Debugging</h3>
+<p>The <code>check</code> program just runs some randomized tests of the basic operations on both your implementation of <code>deque</code> and the STL’s version. For convenience, I have also given you a wrapper program called <code>test.sh</code> that will run <code>check</code>, and compare the outputs. In the event that something is wrong, you will be presented with a <a href="https://en.wikipedia.org/wiki/Unified_diff#Unified_format">diff</a> that shows you where things went wrong. <em>NOTE:</em> the <code>check</code> output tells you approximately what line in <code>check.cpp</code> the following output came from, so it should be easy for you to track down where things went wrong.</p>
+<p>If you don’t like reading unified diffs, you can use some other tool. The output files will be named <code>out0</code> (this is the output from your deque) and <code>out1</code> (output from the STL version). Vim is nice for this:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a>$ <span class="ex">vimdiff</span> out*</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="co"># Or if you have the GTK interface:</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>$ <span class="ex">gvimdiff</span> out*</span></code></pre></div>
+<p>Also keep in mind that you can modify <code>check.cpp</code> to print out more information, should you so desire. Same goes for <code>main.cpp</code>.</p>
+<h2 id="remarks">Remarks</h2>
+<p>Your textbook uses slightly different terminology when talking about queues (and deques). A possible Rosetta stone to translate the terms, with your textbook on the left, and our project on the right:</p>
+<ul>
+<li><code>enqueue</code> <span class="math inline">≡</span> <code>push_back</code></li>
+<li><code>deque</code> <span class="math inline">≡</span> <code>pop_front</code></li>
+</ul>
+<p>Extra confusing is that our whole data structure is called a “deque”… Anyhow, by restricting attention only to <code>push_back</code> and <code>pop_front</code>, our deque gives you a traditional queue.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> If you use only <code>push_back</code> and <code>pop_back</code>, you get a traditional stack.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+<h2 id="submission-procedure">Submission Procedure</h2>
+<p>Just make sure your group is listed on Piazza before the deadline.</p>
+<!--  links  -->
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>Note that the STL implementation does something more interesting, allocating fixed-size chunks of memory so that no single allocation (a call to <code>push_back</code> or <code>push_front</code>) will take much more time than any other, much in contrast with a vector. See <code>/usr/include/c++/[GCC-version]/bits/stl_deque.h</code> if you are curious about the details. Also <a href="https://www.codeproject.com/Articles/5425/An-In-Depth-Study-of-the-STL-Deque-Container">this analysis</a> might be illustrative.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>You could just as well restrict to <code>push_front</code> and <code>pop_back</code>, of course.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p>Alternatively, the same is true of <code>push_front</code> and <code>pop_front</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
